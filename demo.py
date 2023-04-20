@@ -45,7 +45,7 @@ def demo(args):
 
             _, flow_up = model(image1, image2, iters=args.valid_iters, test_mode=True)
             flow_up = padder.unpad(flow_up).squeeze()
-            file_stem = imfile1.split('/')[-3]+'_'+imfile1.split('/')[-1].split('.')[0]
+            file_stem = imfile1.split('/')[-1].split('.')[0]
             print(file_stem)
             if args.save_numpy:
                 np.save(output_directory / f"{file_stem}.npy", flow_up.cpu().numpy().squeeze())
