@@ -49,7 +49,7 @@ def demo(args):
             print(file_stem)
             if args.save_numpy:
                 np.save(output_directory / f"{file_stem}.npy", flow_up.cpu().numpy().squeeze())
-            plt.imsave(output_directory / f"{file_stem}.png", -flow_up.cpu().numpy().squeeze(), cmap='jet')
+            plt.imsave(output_directory / f"{file_stem}_stereo.png", -flow_up.cpu().numpy().squeeze(), cmap='jet')
 
 
 if __name__ == '__main__':
