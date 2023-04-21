@@ -58,7 +58,7 @@ stereo_images = []
 disp_images = []
 mask_images = []
 
-output_directory = '../extracted_images/2022-07-02-20-21-19/outputs/'
+output_directory = '../extracted_images/2022-07-02-20-21-19/outputs_all/'
 print(output_directory)
 
 
@@ -108,13 +108,21 @@ for disp_path, img_path, seg_mask in zip(disp_images, stereo_images, mask_images
 
     # Select points with valid seg_mask
     points = points_grid.transpose(1,2,0)
+    # colors = disp.astype(np.float64) / 255 # if you want disparity color
     colors = seg_mask
     print(points.shape, colors.shape)
-    mask = colors[:,:,1] > 0
+    # mask = colors[:,:,1] > 0 # if filtering by valid seg_masks
+    mask = np.ones((H, W), dtype=bool)
+    mask[1:][np.abs(depth[1:] - depth[:-1]) > 1] = False
+    mask[:,1:][np.abs(depth[:,1:] - depth[:,:-1]) > 1] = False
     print(mask.shape)
     points = points[mask]
     colors = colors[mask]
-    print(points.shape, colors.shape)
+
+    points_select = points[:,2] < 300
+    points = points[points_select]
+    colors = colors[points_select]
+    # print(points.shape, colors.shape)
 
 
     # Remove points with depth > 300m
@@ -124,8 +132,6 @@ for disp_path, img_path, seg_mask in zip(disp_images, stereo_images, mask_images
 
     # Plot
     plot_points(points, colors)
-    break
 
     # Save as .npz
-    # savez_compressed(os.path.splitext(disp_path)+'.npz', points=points, colors=colors)
-
+    savez_compressed(os.path.join(os.path.splitext(disp_path)[0] + '.npz'), points=points, colors=colors)
